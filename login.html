@@ -38,6 +38,71 @@
     </div>
   </div>
 
+  <!-- 模态框 -->
+  <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">友情提示</h4>
+        </div>
+        <div class="modal-body">
+          <p></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+
+  <script src="./libs/http.js"></script>
+
+  <script>
+    $(function () {
+      //点击登录框
+      $('.input_sub').click(function (e) {
+        //取消默认的点击跳转
+        e.preventDefault();
+
+        //获取用户名框和密码框的内容
+        var username = $('.input_txt').val().trim();
+        var password = $('.input_pass').val().trim();
+
+        //判断输入框是否为空
+        if (username.length == 0 || password.length == 0) {
+          $('.modal-body>p').text('用户名或密码不能为空');
+          $('#myModal').modal();
+          return;
+        }
+        $.ajax({
+          url: BigNew.user_login,
+          type: 'post',
+          dataType: 'json',
+          data: {
+            username: username,
+            password: password
+          },
+          success: function (backData) {
+            console.log(backData);
+            if (backData.code == 200) {
+              $('.modal-body>p').text(backData.msg);
+              $('#myModal').modal();
+              $('#myModal').on('hidden.bs.modal', function (e) {
+                localStorage.setItem('token', backData.token);
+                window.location.href = 'index.html';
+              })
+            } else if (backData.code == 400) {
+              $('.modal-body>p').text(backData.msg);
+              $('#myModal').modal();
+              return;
+            }
+          }
+        });
+      });
+    });
+  </script>
 </body>
 
 </html>
