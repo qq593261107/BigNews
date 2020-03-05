@@ -52,4 +52,146 @@
         </div>
     </div>
 
+    <!-- 模态框 -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">新增分类</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">分类名称:</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="control-label">分类别名:</label>
+                            <input class="form-control" id="message-text">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default cancel" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary confirm">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script id="cat_list" type="text/html">
+        {{each data v}}
+        <tr>
+            <td>{{v.name}}</td>
+            <td>{{v.slug}}</td>
+            <td class="text-center">
+                <a href="javascript:;" data-id="{{v.id}}" class=" btn btn-info btn-xs" data-toggle="modal" data-target="#myModal">编辑</a>
+                <a href="javascript:;" data-id="{{v.id}}" class="btn btn-danger btn-xs btn-delete">删除</a>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+
+    <script src="./libs/http.js"></script>
+    <script>
+        $(function () {
+            $.ajax({
+                url: BigNew.category_list,
+                type: 'get',
+                dataType: 'json',
+                success: function (backData) {
+                    console.log(backData);
+                    $('.table tbody').html(template('cat_list', backData));
+                }
+            });
+
+            $('#myModal').on('show.bs.modal', function (e) {
+                // console.log(e.relatedTarget.text);
+                if (e.relatedTarget.text == '新增分类') {
+                    $('.confirm').text('新增');
+                } else {
+                    $('.confirm').text('编辑');
+                    $('#recipient-name').val($(e.relatedTarget).parent().prev().prev().text());
+                    $('#message-text').val($(e.relatedTarget).parent().prev().text());
+                    $('.confirm').attr('data-id', $(e.relatedTarget).attr('data-id'));
+                }
+            })
+
+            $('.cancel').click(function () {
+                $('.modal-body>form')[0].reset();
+            });
+
+            $('body').on('click', '.btn-delete', function () {
+                // console.log(11);
+                var id = $(this).attr('data-id');
+                // console.log(id);
+                $.ajax({
+                    url: BigNew.category_delete,
+                    type: 'post',
+                    dataType: 'json',
+                    data: {
+                        id: id
+                    },
+                    success: function (backData) {
+                        console.log(backData);
+                        if (backData.code == 204) {
+                            alert('已删除')
+                            window.location.reload();
+                        }else{
+                            alert(backData.msg);
+                        }
+                    }
+                });
+            });
+
+            $('.confirm').click(function () {
+                if ($(this).text() == '新增') {
+                    $.ajax({
+                        url: BigNew.category_add,
+                        type: 'post',
+                        dataType: 'json',
+                        data: {
+                            name: $('#recipient-name').val(),
+                            slug: $('#message-text').val()
+                        },
+                        success: function (backData) {
+                            console.log(backData);
+                            if (backData.code == 201) {
+                                alert('添加成功');
+                                window.location.reload();
+                            } else {
+                                alert(backData.msg);
+                            }
+                        }
+                    });
+                } else {
+                    $.ajax({
+                        url: BigNew.category_edit,
+                        type: 'post',
+                        dataType: 'json',
+                        data: {
+                            name: $('#recipient-name').val(),
+                            slug: $('#message-text').val(),
+                            id: $(this).attr('data-id')
+                        },
+                        success: function (backData) {
+                            console.log(backData);
+                            if (backData.code == 200) {
+                                alert('修改成功');
+                                window.location.reload();
+                            } else {
+                                alert(backData.msg);
+                            }
+                        }
+                    });
+                }
+
+            });
+
+
+        });
+    </script>
+
 </html>
