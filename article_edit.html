@@ -22,6 +22,7 @@
     <script src="./libs/wangEditor.js"></script>
     <!-- jsDate + wangEditor配置文件 -->
     <!-- <script src="./libs/config.js"></script> -->
+    <script src="./libs/config.js"></script>
 </head>
 
 <body>
@@ -97,21 +98,7 @@
     <script>
         // 入口函数
         $(function () {
-            jeDate('#testico', {
-                trigger: 'click',
-                theme: { bgcolor: "#00A680", pnColor: "#00DDAA" },//绿色主题
-                format: "YYYY-MM-DD",
-                isinitVal: true,
-                zIndex: 10002,//设置弹出层的层级
-            });
-
-            /* 初始化选项 */
-            /* 3.初始化 */
-            var E = window.wangEditor;
-            //把创建的editor作为全局变量
-            window.editor = new E('#editor');
-            // 或者 var editor = new E( document.getElementById('editor') )
-            editor.create();
+            
 
 
             //1.获取artile_list页面传递过来的文章id
